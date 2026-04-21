@@ -16,6 +16,12 @@ export const useAppStore = defineStore('app', () => {
     theme.value = newTheme
     localStorage.setItem('theme', newTheme)
     document.documentElement.setAttribute('data-theme', newTheme)
+    // 切换 Element Plus 暗黑模式
+    if (newTheme === 'dark') {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
   }
 
   const setLanguage = (newLanguage) => {
@@ -25,6 +31,12 @@ export const useAppStore = defineStore('app', () => {
 
   const initTheme = () => {
     document.documentElement.setAttribute('data-theme', theme.value)
+    // 初始化 Element Plus 暗黑模式
+    if (theme.value === 'dark') {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
   }
 
   return {

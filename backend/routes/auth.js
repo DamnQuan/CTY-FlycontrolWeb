@@ -107,7 +107,7 @@ router.post('/login', [
 
     // 更新登录信息
     await User.update(user.id, {
-      lastLoginAt: new Date().toISOString()
+      lastLoginAt: new Date()
     });
 
     // 记录审计日志

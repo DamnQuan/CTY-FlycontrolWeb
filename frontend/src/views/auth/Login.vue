@@ -17,9 +17,10 @@
         <el-form-item prop="username">
           <el-input
             v-model="form.username"
-            placeholder="用户名/邮箱"
+            placeholder="用户名或邮箱"
             size="large"
             :prefix-icon="User"
+            clearable
           />
         </el-form-item>
         
@@ -31,8 +32,13 @@
             size="large"
             :prefix-icon="Lock"
             show-password
+            clearable
           />
         </el-form-item>
+        
+        <div class="form-options">
+          <el-checkbox v-model="rememberMe">记住我</el-checkbox>
+        </div>
         
         <el-form-item>
           <el-button
@@ -50,7 +56,7 @@
       <div class="login-footer">
         <span>还没有账号？</span>
         <el-button link type="primary" @click="$router.push('/register')">
-          立即注册
+          去注册
         </el-button>
       </div>
     </div>
@@ -58,9 +64,9 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { User, Lock } from '@element-plus/icons-vue'
+import { User, Lock, Promotion } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
 import { ElMessage } from 'element-plus'
 
@@ -69,6 +75,7 @@ const userStore = useUserStore()
 
 const formRef = ref(null)
 const loading = ref(false)
+const rememberMe = ref(false)
 
 const form = reactive({
   username: '',
@@ -81,9 +88,17 @@ const rules = {
   ],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, message: '密码长度至少6位', trigger: 'blur' }
+    { min: 6, message: '密码至少6位', trigger: 'blur' }
   ]
 }
+
+onMounted(() => {
+  const savedUsername = localStorage.getItem('rememberedUsername')
+  if (savedUsername) {
+    form.username = savedUsername
+    rememberMe.value = true
+  }
+})
 
 const handleLogin = async () => {
   try {
@@ -91,6 +106,13 @@ const handleLogin = async () => {
     loading.value = true
     
     await userStore.login(form)
+    
+    if (rememberMe.value) {
+      localStorage.setItem('rememberedUsername', form.username)
+    } else {
+      localStorage.removeItem('rememberedUsername')
+    }
+    
     ElMessage.success('登录成功')
     router.push('/')
   } catch (error) {
@@ -107,15 +129,17 @@ const handleLogin = async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #f5f7fa;
+  padding: 20px;
 }
 
 .login-box {
-  width: 400px;
+  width: 100%;
+  max-width: 400px;
   padding: 40px;
   background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
 }
 
 .login-header {
@@ -123,14 +147,15 @@ const handleLogin = async () => {
   margin-bottom: 32px;
   
   .logo {
-    font-size: 64px;
+    font-size: 56px;
     color: #409eff;
   }
   
   h2 {
     margin: 16px 0 8px;
-    font-size: 24px;
-    color: #303133;
+    font-size: 28px;
+    font-weight: 600;
+    color: #1a1a2e;
   }
   
   p {
@@ -140,8 +165,15 @@ const handleLogin = async () => {
 }
 
 .login-form {
+  .form-options {
+    margin-bottom: 20px;
+  }
+  
   .login-btn {
     width: 100%;
+    height: 44px;
+    font-size: 16px;
+    border-radius: 8px;
   }
 }
 
@@ -150,5 +182,11 @@ const handleLogin = async () => {
   text-align: center;
   color: #606266;
   font-size: 14px;
+}
+
+@media (max-width: 480px) {
+  .login-box {
+    padding: 32px 24px;
+  }
 }
 </style>

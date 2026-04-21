@@ -3,8 +3,8 @@
     <div class="register-box">
       <div class="register-header">
         <el-icon class="logo"><Promotion /></el-icon>
-        <h2>注册账号</h2>
-        <p>加入CTY垂天云飞控系统</p>
+        <h2>CTY垂天云</h2>
+        <p>创建新账号</p>
       </div>
       
       <el-form
@@ -17,9 +17,10 @@
         <el-form-item prop="username">
           <el-input
             v-model="form.username"
-            placeholder="用户名（昵称）"
+            placeholder="用户名"
             size="large"
             :prefix-icon="User"
+            clearable
           />
         </el-form-item>
 
@@ -29,15 +30,17 @@
             placeholder="CID"
             size="large"
             :prefix-icon="Document"
+            clearable
           />
         </el-form-item>
 
         <el-form-item prop="email">
           <el-input
             v-model="form.email"
-            placeholder="邮箱"
+            placeholder="邮箱地址"
             size="large"
             :prefix-icon="Message"
+            clearable
           />
         </el-form-item>
         
@@ -45,10 +48,11 @@
           <el-input
             v-model="form.password"
             type="password"
-            placeholder="密码"
+            placeholder="设置密码"
             size="large"
             :prefix-icon="Lock"
             show-password
+            clearable
           />
         </el-form-item>
         
@@ -60,6 +64,7 @@
             size="large"
             :prefix-icon="Lock"
             show-password
+            clearable
           />
         </el-form-item>
         
@@ -71,7 +76,7 @@
             :loading="loading"
             @click="handleRegister"
           >
-            注册
+            创建账号
           </el-button>
         </el-form-item>
       </el-form>
@@ -79,7 +84,7 @@
       <div class="register-footer">
         <span>已有账号？</span>
         <el-button link type="primary" @click="$router.push('/login')">
-          立即登录
+          直接登录
         </el-button>
       </div>
     </div>
@@ -89,7 +94,7 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { User, Lock, Message, Document } from '@element-plus/icons-vue'
+import { User, Lock, Message, Document, Promotion } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
 import { ElMessage } from 'element-plus'
 
@@ -161,15 +166,17 @@ const handleRegister = async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #f5f7fa;
+  padding: 20px;
 }
 
 .register-box {
-  width: 400px;
+  width: 100%;
+  max-width: 400px;
   padding: 40px;
   background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
 }
 
 .register-header {
@@ -177,14 +184,15 @@ const handleRegister = async () => {
   margin-bottom: 32px;
   
   .logo {
-    font-size: 64px;
+    font-size: 56px;
     color: #409eff;
   }
   
   h2 {
     margin: 16px 0 8px;
-    font-size: 24px;
-    color: #303133;
+    font-size: 28px;
+    font-weight: 600;
+    color: #1a1a2e;
   }
   
   p {
@@ -196,6 +204,10 @@ const handleRegister = async () => {
 .register-form {
   .register-btn {
     width: 100%;
+    height: 44px;
+    font-size: 16px;
+    border-radius: 8px;
+    margin-top: 8px;
   }
 }
 
@@ -204,5 +216,11 @@ const handleRegister = async () => {
   text-align: center;
   color: #606266;
   font-size: 14px;
+}
+
+@media (max-width: 480px) {
+  .register-box {
+    padding: 32px 24px;
+  }
 }
 </style>

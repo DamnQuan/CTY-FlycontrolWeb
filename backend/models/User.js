@@ -93,15 +93,16 @@ class User {
       throw new Error('邮箱已被注册')
     }
 
-    // 加密密码
-    const hashedPassword = await bcrypt.hash(password, 10)
+    // 密码应该已经在路由中哈希过了，这里直接使用
+    // 如果密码不是哈希格式（长度小于60），则进行哈希
+    const finalPassword = password.length >= 60 ? password : await bcrypt.hash(password, 10)
 
     const sql = `
       INSERT INTO users (username, email, password, realName, cid, rating, avatar)
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `
     const result = await dbAsync.insert(sql, [
-      username, email, hashedPassword, realName ?? null, cid ?? null, rating ?? null, avatar ?? null
+      username, email, finalPassword, realName ?? null, cid ?? null, rating ?? null, avatar ?? null
     ])
 
     return this.findById(result.id)

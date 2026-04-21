@@ -71,9 +71,6 @@
       </el-menu>
       
       <div class="sidebar-footer">
-        <el-button v-if="!isCollapse" text @click="toggleTheme">
-          <el-icon :size="18"><Moon v-if="isDark" /><Sunny v-else /></el-icon>
-        </el-button>
       </div>
     </el-aside>
     
@@ -136,16 +133,14 @@ import { useUserStore } from '@/stores/user'
 import {
   Promotion, HomeFilled, Calendar, PartlyCloudy, Tickets, User,
   Setting, UserFilled, DocumentChecked, Lock, List, ArrowDown,
-  SwitchButton, Moon, Sunny
+  SwitchButton
 } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
 
 const isCollapse = ref(false)
-const isDark = ref(false)
 
 const activeMenu = computed(() => route.path)
 
@@ -159,11 +154,6 @@ const breadcrumbs = computed(() => {
 
 const toggleCollapse = () => {
   isCollapse.value = !isCollapse.value
-}
-
-const toggleTheme = () => {
-  isDark.value = !isDark.value
-  document.documentElement.classList.toggle('dark')
 }
 
 const hasPermission = (permission) => {
