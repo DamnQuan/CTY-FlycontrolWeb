@@ -7,9 +7,9 @@
             <span class="page-title">活动列表</span>
             <el-radio-group v-model="filterStatus" size="small" @change="handleFilterChange">
               <el-radio-button label="">全部</el-radio-button>
-              <el-radio-button label="published">报名中</el-radio-button>
-              <el-radio-button label="ongoing">进行中</el-radio-button>
-              <el-radio-button label="completed">已结束</el-radio-button>
+              <el-radio-button label="registering">报名中</el-radio-button>
+              <el-radio-button label="started">已开始</el-radio-button>
+              <el-radio-button label="ended">已结束</el-radio-button>
             </el-radio-group>
           </div>
           <el-input
@@ -154,11 +154,9 @@ const goToDetail = (id) => {
 
 const getStatusText = (status) => {
   const map = {
-    'draft': '草稿',
-    'published': '报名中',
-    'ongoing': '进行中',
-    'completed': '已结束',
-    'cancelled': '已取消'
+    'registering': '报名中',
+    'started': '已开始',
+    'ended': '已结束'
   }
   return map[status] || status
 }

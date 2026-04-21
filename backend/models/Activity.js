@@ -102,13 +102,15 @@ class Activity {
     return result.affectedRows > 0
   }
 
-  static async register(activityId, userId) {
+  static async register(activityId, userId, registrationData) {
+    const { registrationType, position, frequency, cid, callsign, aircraft } = registrationData
+    
     const sql = `
-      INSERT INTO activity_participants (activityId, userId)
-      VALUES (?, ?)
+      INSERT INTO activity_participants (activityId, userId, registrationType, position, frequency, cid, callsign, aircraft)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `
     try {
-      await dbAsync.insert(sql, [activityId, userId])
+      await dbAsync.insert(sql, [activityId, userId, registrationType, position || null, frequency || null, cid || null, callsign || null, aircraft || null])
       return true
     } catch (err) {
       if (err.code === 'ER_DUP_ENTRY') {
@@ -126,13 +128,32 @@ class Activity {
 
   static async getParticipants(activityId) {
     const sql = `
-      SELECT ap.*, u.username, u.realName, u.avatar
+      SELECT ap.*, u.username, u.realName, u.avatar, u.id as userId
       FROM activity_participants ap
       JOIN users u ON ap.userId = u.id
       WHERE ap.activityId = ?
       ORDER BY ap.registeredAt DESC
     `
-    return await dbAsync.query(sql, [activityId])
+    const participants = await dbAsync.query(sql, [activityId])
+    // 格式化返回数据
+    return participants.map(p => ({
+      id: p.id,
+      activityId: p.activityId,
+      user: {
+        id: p.userId,
+        username: p.username,
+        realName: p.realName,
+        avatar: p.avatar
+      },
+      registrationType: p.registrationType,
+      position: p.position,
+      frequency: p.frequency,
+      cid: p.cid,
+      callsign: p.callsign,
+      aircraft: p.aircraft,
+      status: p.status,
+      registeredAt: p.registeredAt
+    }))
   }
 
   static async isRegistered(activityId, userId) {
@@ -143,23 +164,23 @@ class Activity {
 
   static async getStats() {
     const totalResult = await dbAsync.queryOne('SELECT COUNT(*) as count FROM activities')
-    const ongoingResult = await dbAsync.queryOne("SELECT COUNT(*) as count FROM activities WHERE status = 'ongoing'")
-    const upcomingResult = await dbAsync.queryOne("SELECT COUNT(*) as count FROM activities WHERE status = 'published' AND startTime > NOW()")
+    const startedResult = await dbAsync.queryOne("SELECT COUNT(*) as count FROM activities WHERE status = 'started'")
+    const registeringResult = await dbAsync.queryOne("SELECT COUNT(*) as count FROM activities WHERE status = 'registering'")
 
     return {
       total: totalResult.count,
-      ongoing: ongoingResult.count,
-      upcoming: upcomingResult.count
+      started: startedResult.count,
+      registering: registeringResult.count
     }
   }
 
-  static async getRecentActivities(limit = 5) {
+  static async getRecentActivities(limit = 6) {
     const sql = `
       SELECT a.*, u.username as organizerName
       FROM activities a
       LEFT JOIN users u ON a.organizerId = u.id
-      WHERE a.status IN ('published', 'ongoing')
-      ORDER BY a.startTime ASC
+      WHERE a.status = 'registering'
+      ORDER BY a.createdAt DESC
       LIMIT ?
     `
     return await dbAsync.query(sql, [limit])

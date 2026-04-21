@@ -77,17 +77,26 @@
         </el-row>
         
         <el-row :gutter="20">
-          <el-col :span="12">
+          <el-col :span="8">
             <el-form-item label="活动封面">
               <el-input v-model="form.coverImage" placeholder="封面图片URL" />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="8">
             <el-form-item label="活动时间">
               <el-input 
                 v-model="form.startTime" 
                 placeholder="格式: 2026-04-19 14:30:00"
               />
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="活动状态">
+              <el-select v-model="form.status" placeholder="请选择活动状态" style="width: 100%;">
+                <el-option label="报名中" value="registering" />
+                <el-option label="已开始" value="started" />
+                <el-option label="已结束" value="ended" />
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -170,6 +179,7 @@ const form = reactive({
   title: '',
   coverImage: '',
   startTime: '',
+  status: 'registering',
   departureAirport: '',
   arrivalAirport: '',
   route: '',
@@ -202,6 +212,7 @@ const handleEdit = (row) => {
     title: row.title || '',
     coverImage: row.coverImage || '',
     startTime: row.startTime || '',
+    status: row.status || 'registering',
     departureAirport: row.departureAirport || '',
     arrivalAirport: row.arrivalAirport || '',
     route: row.route || '',
@@ -275,6 +286,7 @@ watch(() => showCreateDialog.value, (val) => {
       title: '',
       coverImage: '',
       startTime: '',
+      status: 'registering',
       departureAirport: '',
       arrivalAirport: '',
       route: '',

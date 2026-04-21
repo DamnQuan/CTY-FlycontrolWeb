@@ -145,8 +145,8 @@ const fetchActivities = async () => {
   try {
     const res = await getActivityList({ page: 1, pageSize: 6 })
     if (res.success) {
-      activities.value = res.data.data || []
-      stats.value.totalActivities = res.data.pagination?.total || 0
+      activities.value = res.data || []
+      stats.value.totalActivities = res.pagination?.total || 0
     }
   } catch (error) {
     console.error('获取活动列表失败:', error)
@@ -174,11 +174,9 @@ const goToActivity = (id) => {
 
 const getStatusText = (status) => {
   const map = {
-    'draft': '草稿',
-    'published': '报名中',
-    'ongoing': '进行中',
-    'completed': '已结束',
-    'cancelled': '已取消'
+    'registering': '报名中',
+    'started': '已开始',
+    'ended': '已结束'
   }
   return map[status] || status
 }

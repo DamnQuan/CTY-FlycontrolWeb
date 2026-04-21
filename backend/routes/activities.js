@@ -36,6 +36,10 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ message: '活动不存在' });
     }
 
+    // 获取参与者信息
+    const participants = await Activity.getParticipants(req.params.id);
+    activity.participants = participants;
+
     res.json({
       success: true,
       data: activity
@@ -140,7 +144,31 @@ router.delete('/:id', auth, requirePermission('activity:delete'), async (req, re
 // 报名活动
 router.post('/:id/register', auth, async (req, res) => {
   try {
-    await Activity.register(req.params.id, req.user.id);
+    const { registrationType, position, frequency, cid, callsign, aircraft } = req.body;
+    
+    // 验证必填字段
+    if (!registrationType) {
+      return res.status(400).json({ message: '请选择报名类型' });
+    }
+    
+    if (registrationType === 'controller') {
+      if (!position || !frequency || !cid) {
+        return res.status(400).json({ message: '请填写完整的管制员报名信息' });
+      }
+    } else if (registrationType === 'pilot') {
+      if (!callsign || !aircraft || !cid) {
+        return res.status(400).json({ message: '请填写完整的机组报名信息' });
+      }
+    }
+    
+    await Activity.register(req.params.id, req.user.id, {
+      registrationType,
+      position,
+      frequency,
+      cid,
+      callsign,
+      aircraft
+    });
 
     // 记录审计日志
     await AuditLog.create({
@@ -148,8 +176,8 @@ router.post('/:id/register', auth, async (req, res) => {
       action: 'register',
       resource: 'activity',
       resourceId: req.params.id,
-      description: `报名活动`,
-      ip: req.ip,
+      details: JSON.stringify({ registrationType }),
+      ipAddress: req.ip,
       userAgent: req.headers['user-agent']
     });
 
@@ -172,10 +200,10 @@ router.post('/:id/cancel', auth, async (req, res) => {
     await AuditLog.create({
       userId: req.user.id,
       action: 'cancel',
-      resource: 'activity',
+      resourceType: 'activity',
       resourceId: req.params.id,
-      description: `取消报名`,
-      ip: req.ip,
+      details: JSON.stringify({ action: '取消报名' }),
+      ipAddress: req.ip,
       userAgent: req.headers['user-agent']
     });
 
