@@ -133,22 +133,28 @@ router.post('/avatar', auth, async (req, res) => {
     // 生成文件名
     const ext = avatar.name.split('.').pop();
     const filename = `avatar_${req.user.id}_${Date.now()}.${ext}`;
-    const uploadPath = `./uploads/avatars/${filename}`;
+    
+    // 使用绝对路径
+    const path = require('path');
+    const fs = require('fs');
+    const uploadDir = path.join(__dirname, '..', 'uploads', 'avatars');
+    const uploadPath = path.join(uploadDir, filename);
 
     // 确保目录存在
-    const fs = require('fs');
-    const path = require('path');
-    const dir = path.dirname(uploadPath);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
     }
 
     // 移动文件
     await avatar.mv(uploadPath);
 
-    // 更新用户头像
-    const avatarUrl = `/uploads/avatars/${filename}`;
-    await User.update(req.user.id, { avatar: avatarUrl });
+    // 更新用户头像 - 返回完整URL
+    const avatarUrl = `${req.protocol}://${req.get('host')}/uploads/avatars/${filename}`;
+    console.log('头像上传 - 用户ID:', req.user.id);
+    console.log('头像上传 - 头像URL:', avatarUrl);
+    
+    const updatedUser = await User.update(req.user.id, { avatar: avatarUrl });
+    console.log('头像上传 - 更新后的用户:', updatedUser);
 
     res.json({
       success: true,

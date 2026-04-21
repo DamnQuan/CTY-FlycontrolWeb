@@ -66,6 +66,7 @@
                 class="avatar-uploader"
                 action="/api/profile/avatar"
                 :headers="uploadHeaders"
+                name="avatar"
                 :show-file-list="false"
                 :on-success="handleAvatarSuccess"
                 :before-upload="beforeAvatarUpload"
@@ -140,6 +141,7 @@ import { UserFilled, Plus, Check, Lock } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
 import { getProfile, updateProfile, updateAvatar, changePassword } from '@/api/profile'
 import { formatDateTime } from '@/utils/date'
+import Cookies from 'js-cookie'
 
 const userStore = useUserStore()
 const formRef = ref(null)
@@ -149,7 +151,7 @@ const changingPassword = ref(false)
 
 // 上传头像的请求头（动态获取token）
 const uploadHeaders = computed(() => ({
-  Authorization: `Bearer ${localStorage.getItem('token') || ''}`
+  Authorization: `Bearer ${Cookies.get('token') || ''}`
 }))
 
 const form = ref({
@@ -204,6 +206,15 @@ const fetchProfile = async () => {
         cid: data.cid || '',
         avatar: data.avatar || ''
       }
+      // 同步更新 userStore 中的用户信息
+      userStore.setUserInfo({
+        ...userStore.userInfo,
+        username: data.username,
+        email: data.email,
+        cid: data.cid,
+        avatar: data.avatar,
+        rating: data.rating
+      })
     }
   } catch (error) {
     console.error('获取个人信息失败:', error)
@@ -222,7 +233,12 @@ const handleSave = async () => {
     })
     if (res.success) {
       ElMessage.success('保存成功')
-      userStore.setUserInfo({ ...userStore.userInfo, ...form.value })
+      // 只更新 email 和 cid，保留其他字段（包括 avatar）
+      userStore.setUserInfo({ 
+        ...userStore.userInfo, 
+        email: form.value.email,
+        cid: form.value.cid
+      })
     } else {
       ElMessage.error(res.message || '保存失败')
     }

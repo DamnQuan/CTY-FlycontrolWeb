@@ -136,11 +136,20 @@ import {
   SwitchButton
 } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { onMounted } from 'vue'
+
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
 
 const isCollapse = ref(false)
+
+// 页面加载时刷新用户信息
+onMounted(() => {
+  if (userStore.isLoggedIn) {
+    userStore.fetchUserInfo().catch(() => {})
+  }
+})
 
 const activeMenu = computed(() => route.path)
 

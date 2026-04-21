@@ -48,6 +48,15 @@ uploads/
 .vscode/
 .idea/
 *.swp
+
+# Nginx 配置（包含敏感信息）
+nginx.conf
+
+# SQL 脚本
+backend/scripts/
+
+# 上传的文件
+backend/uploads/
 *.swo
 *~
 *.suo
@@ -78,6 +87,9 @@ backend/backend.zip
 frontend/FlyControlWEB-main/
 backend/.gitignore
 
-# Scripts
-backend/scripts/
-nginx.conf
+# package-lock.json (可以通过 npm install 重新生成)
+frontend/package-lock.json
+backend/package-lock.json
+
+# 临时文件
+frontend/query

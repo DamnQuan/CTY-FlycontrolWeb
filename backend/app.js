@@ -31,8 +31,9 @@ app.use(fileUpload({
   abortOnLimit: true
 }));
 
-// 静态文件
-app.use('/uploads', express.static('uploads'));
+// 静态文件 - 使用绝对路径
+const path = require('path');
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // 初始化SQLite数据库并启动服务器
 initDatabase()
