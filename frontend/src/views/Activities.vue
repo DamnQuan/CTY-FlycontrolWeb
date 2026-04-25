@@ -3,26 +3,7 @@
     <el-card shadow="hover">
       <template #header>
         <div class="page-header">
-          <div class="header-left">
-            <span class="page-title">活动列表</span>
-            <el-radio-group v-model="filterStatus" size="small" @change="handleFilterChange">
-              <el-radio-button label="">全部</el-radio-button>
-              <el-radio-button label="registering">报名中</el-radio-button>
-              <el-radio-button label="started">已开始</el-radio-button>
-              <el-radio-button label="ended">已结束</el-radio-button>
-            </el-radio-group>
-          </div>
-          <el-input
-            v-model="searchKeyword"
-            placeholder="搜索活动"
-            clearable
-            style="width: 250px"
-            @keyup.enter="handleSearch"
-          >
-            <template #prefix>
-              <el-icon><Search /></el-icon>
-            </template>
-          </el-input>
+          <span class="page-title">活动列表</span>
         </div>
       </template>
 
@@ -88,15 +69,13 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { Search, Clock, Location, User } from '@element-plus/icons-vue'
+import { Clock, Location, User } from '@element-plus/icons-vue'
 import { getActivityList } from '@/api/activity'
 import { formatDateTime } from '@/utils/date'
 
 const router = useRouter()
 const loading = ref(false)
 const activities = ref([])
-const searchKeyword = ref('')
-const filterStatus = ref('')
 const pagination = ref({
   page: 1,
   pageSize: 12,
@@ -108,11 +87,7 @@ const fetchActivities = async () => {
   try {
     const params = {
       page: pagination.value.page,
-      pageSize: pagination.value.pageSize,
-      keyword: searchKeyword.value
-    }
-    if (filterStatus.value) {
-      params.status = filterStatus.value
+      pageSize: pagination.value.pageSize
     }
     const res = await getActivityList(params)
     if (res.success) {
@@ -125,16 +100,6 @@ const fetchActivities = async () => {
   } finally {
     loading.value = false
   }
-}
-
-const handleSearch = () => {
-  pagination.value.page = 1
-  fetchActivities()
-}
-
-const handleFilterChange = () => {
-  pagination.value.page = 1
-  fetchActivities()
 }
 
 const handlePageChange = (page) => {
