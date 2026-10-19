@@ -221,7 +221,3 @@ CTY垂天云飞控/
 - 文件上传使用 `express-fileupload` 中间件
 - 密码使用 bcryptjs 加密存储
 - JWT Token 有效期默认为7天
-
-## 许可证
-
-MIT License
