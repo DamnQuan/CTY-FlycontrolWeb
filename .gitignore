@@ -82,7 +82,7 @@ Thumbs.db
 frontend/dist.zip
 backend/backend.zip
 
-# FlyControlWEB-main (参考项目)
+# FlyControlWEB-main
 frontend/FlyControlWEB-main/
 backend/.gitignore
 
